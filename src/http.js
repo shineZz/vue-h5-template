@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { Loading, Message } from 'element-ui'
+// import { Loading, Message } from 'element-ui'
 // 超时时间
 // 请求时的拦截
 axios.interceptors.request.use(config => {
@@ -23,12 +23,12 @@ function checkStatus (response) {
   // 
   //
   if(response.status === 404){
-    Message({
+    $message({
       type: 'error',
       message: '服务器找不到请求的页面'
     });
   }else if(response.status === 500){
-    Message({
+    $message({
       type: 'error',
       message: '服务器内部错误'
     });
