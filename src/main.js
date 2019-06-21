@@ -182,7 +182,8 @@ router.beforeEach((to, from, next) => {
     }
   } else {
     if (!took) {
-      location.href = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx9f8d74816fc35815&redirect_uri=${url}&response_type=code&scope=snsapi_base&state=false#wechat_redirect`
+      next()
+      // location.href = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx9f8d74816fc35815&redirect_uri=${url}&response_type=code&scope=snsapi_base&state=false#wechat_redirect`
     }
   }
   

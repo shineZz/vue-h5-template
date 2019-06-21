@@ -14,28 +14,28 @@
         <el-button type="primary" size="small" @click="getAccessToken">免费下载</el-button>
       </div>
     </div>
-    <div class="rel content bg-4 clearfix ly-flex ly-flex-d-c">
+    <div class="rel content clearfix ly-flex ly-flex-d-c">
       <div class="ly-flex ly-flex-d-c clearfix pb20 m15">
         <img :src="img" alt="logo" class="imgw">
         <div>
-          <h3 class="font22 font-w600 text-align-r">捕鱼赢红包，兑换秒到账</h3>
-          <h3 class="font22 font-w600 text-align-r mt10">大鱼好打爆率高</h3>
+          <h3 class="font22 font-w600 color-tb text-align-c">捕鱼赢红包，兑换秒到账</h3>
+          <h3 class="font22 font-w600 color-tb text-align-c mt10">大鱼好打爆率高</h3>
         </div>
         <div class="mt10 text-align-r buttom-foot pb15">
-          <el-button size="medium" type="primary">免费下载</el-button>
+          <el-button size="medium" type="primary" @click="download">免费下载</el-button>
         </div>
         <h3 class="mt10 font-w600">更多街机游戏等你体验</h3>
       </div>
-      <div class="p20 ly-flex ly-flex-fw">
+      <div class="p20 ly-flex ly-flex-fw ly-flex-jcsb">
         <img :src="img" alt="游戏截图" class="imgGame" style="transform:translate(20px,20px);">
         <img :src="img" alt="游戏截图" class="imgGame" style="transform:translate(-20px,60px);">
         <img :src="img" alt="游戏截图" class="imgGame" style="transform:translate(20px,20px);">
         <img :src="img" alt="游戏截图" class="imgGame" style="transform:translate(-20px,-10px);">
       </div>
-      <div class="p10 mb30">
-        <span v-for="item in text">{{item+' '}}</span>
+      <div class="p10 mb30 mt30">
+        <span v-for="item in text">{{item}}&nbsp;&nbsp;&nbsp;</span>
       </div>
-      <div class="footer">众多游戏尽在加勒比</div>
+      <div class="footer text-align-r mr20 mb20">众多游戏尽在加勒比</div>
     </div>
   </div>
 </template>
@@ -83,27 +83,33 @@ export default {
       console.log($http, "this.$http");
       let CODE = localStorage["webappCode"];
       // let url = `https://api.weixin.qq.com/sns/oauth2/access_token?appid=${appID.appid}&secret=${appID.secret}&code=${CODE}&grant_type=authorization_code`
-      let url = `https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${appID.appid}&secret=${appID.secret}`;
-      let data = await $http.get(url, {});
-        if('access_token' in data){
-          console.log("this.$htt234234");
-          localStorage['access_token'] = data.access_token
-          this.getJsapiTicket
-        }
-      console.log(data);
+      let url = `https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${
+        appID.appid
+      }&secret=${appID.secret}`;
+      let res = await $http.get(url, {});
+      console.log(res.data, "this.1");
+
+      if ("access_token" in res.data) {
+        console.log("this.2");
+        localStorage["access_token"] = res.data.access_token;
+        this.getJsapiTicket();
+      }
     },
-    getJsapiTicket:async function(){
-      let accessToken =localStorage['access_token']
-      let url = `https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=${accessToken}&type=jsapi` 
-      let data = await $http.get(url, {});
-     console.log(data,'getJsapiTicket');
+    getJsapiTicket: async function() {
+      let accessToken = localStorage["access_token"];
+      let url = `https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=${accessToken}&type=jsapi`;
+      let res = await $http.get(url, {});
+      console.log(res.data, "getJsapiTicket");
+    },
+    download(){
+      //  window.location.assign('www.baidu.com')
     }
   }
 };
 </script>
 <style lang="scss" scoped>
 #home {
-  background-color: #f2f6fc;
+  background-color: #fff;
 
   .top {
     z-index: 9999;
@@ -127,14 +133,17 @@ export default {
       border-bottom: 1px solid #dcdfe6;
     }
     .imgGame {
-      width: 9.375rem;
-      height: 9.375rem;
+      display: inline-block;
+      // height: auto;
+      // max-width: 100%;
+      width: 8.75rem;
+      height: 8.75rem;
     }
   }
   .footer {
-    position: absolute;
-    bottom: 1.25rem;
-    right: 0.625rem;
+    // position: absolute;
+    // bottom: 1.25rem;
+    // right: 0.625rem;
   }
 }
 </style>
