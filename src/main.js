@@ -2,6 +2,7 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
+import { isweixin } from './unit';
 import {
   Pagination,
   Dialog,
@@ -75,6 +76,7 @@ import './registerServiceWorker'
 import './plugins/element.js'
 import './assets/styles/base.scss'
 import 'element-ui/lib/theme-chalk/index.css';
+import { mapMutations } from 'vuex'
 Vue.config.productionTip = false
 var elUseList = [
   Pagination,
@@ -141,7 +143,7 @@ var elUseList = [
   Main,
   Footer,
 ];
-elUseList.forEach((u)=>{
+elUseList.forEach((u) => {
   Vue.use(u);
 })
 Vue.use(Loading.directive);
@@ -153,6 +155,41 @@ Vue.prototype.$prompt = MessageBox.prompt;
 Vue.prototype.$notify = Notification;
 Vue.prototype.$message = Message;
 
+router.beforeEach((to, from, next) => {
+  let url = encodeURIComponent(location.href)
+  let took = to.query.state||false
+  console.log(took, 'took0')
+  let bool = isweixin()
+  if (bool) {
+    if (!took) {
+      location.href = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx9f8d74816fc35815&redirect_uri=${url}&response_type=code&scope=snsapi_userinfo&state=true#wechat_redirect`
+    }else{
+      console.log(took, 'took122')
+      console.log(to, from,next, url,'urlurl')
+      let query =to.query
+      if ('code' in query){
+        sessionStorage['webappCode'] = query.code
+        next()
+      }else{
+        this.$message({
+          message: '请授权之后访问',
+          type: 'warning'
+        });
+        location.href = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx9f8d74816fc35815&redirect_uri=${url}&response_type=code&scope=snsapi_userinfo&state=true#wechat_redirect`
+      }
+      
+      
+    }
+  } else {
+    if (!took) {
+      location.href = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx9f8d74816fc35815&redirect_uri=${url}&response_type=code&scope=snsapi_base&state=false#wechat_redirect`
+    }
+  }
+  
+  /* must call `next` */
+
+
+})
 new Vue({
   router,
   store,

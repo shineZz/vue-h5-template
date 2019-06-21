@@ -11,7 +11,7 @@
         </div>
       </div>
       <div class="mt5 pr10">
-        <el-button type="primary" size="small">免费下载</el-button>
+        <el-button type="primary" size="small" @click="getAccessToken">免费下载</el-button>
       </div>
     </div>
     <div class="rel content bg-4 clearfix ly-flex ly-flex-d-c">
@@ -31,24 +31,21 @@
         <img :src="img" alt="游戏截图" class="imgGame" style="transform:translate(-20px,60px);">
         <img :src="img" alt="游戏截图" class="imgGame" style="transform:translate(20px,20px);">
         <img :src="img" alt="游戏截图" class="imgGame" style="transform:translate(-20px,-10px);">
-
       </div>
       <div class="p10 mb30">
-         <span v-for="item in text">{{item}} </span>
+        <span v-for="item in text">{{item+' '}}</span>
       </div>
-      <div class="footer">
-        众多游戏尽在加比勒
-      </div>
-     
+      <div class="footer">众多游戏尽在加勒比</div>
     </div>
-   
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
 import img from "../assets/logo.png";
-import { isweixin } from '../../src/unit';
+import { isweixin, appID } from "../../src/unit";
+import { mapMutations, mapState } from "vuex";
+import $http from "../http";
 // import './assets/styles/base.scss'
 
 export default {
@@ -57,36 +54,51 @@ export default {
   data() {
     return {
       img: img,
-      imgG:[{
-
-      }
-      ],
-      text:['僵尸先生','水浒传','九线拉王','连环夺宝','飞禽走兽','。。。']
-
+      imgG: [{}],
+      text: ["僵尸先生", "水浒传", "九线拉王", "连环夺宝", "飞禽走兽", "。。。"]
     };
   },
-  beforeCreate () {
-     let bool = isweixin()
-     console.log('beforeCreate')
-     if(bool) {
-      
-     }else{
-
-      let url =encodeURI(location.href)
-      location.href= `https://open.weixin.qq.com/connect/oauth2/authorize?appid=APPID&redirect_uri=${url}&response_type=code&scope=SCOPE&state=STATE#wechat_redirect `
-      console.log(location.href,'location.hreflocation.href')
-     }
+  // beforeCreate() {
+  //   let bool = isweixin();
+  //   console.log(this.took,'this.tookthis.took0')
+  //   if (bool) {
+  //     if (this.took) {
+  //       console.log(this.took,'this.tookthis.took1')
+  //       let url = encodeURIComponent(location.href);
+  //       location.href = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx9f8d74816fc35815&redirect_uri=${url}&response_type=code&scope=snsapi_base&state=123#wechat_redirect`;
+  //      this.$store.commit("CHANGE_TOOK",fasle)
+  //      console.log(this.took,'this.tookthis.took2')
+  //     }
+  //   } else {
+  //     // let url =encodeURI(location.href)
+  //     // location.href= `https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx520c15f417810387&redirect_uri=${url}&response_type=code&scope=snsapi_base&state=123#wechat_redirect`
+  //   }
+  // },
+  computed: {
+    ...mapMutations(["CHANGE_TOOK"]),
+    ...mapState(["took"])
   },
   methods: {
-    isweixin() {
-          const ua = window.navigator.userAgent.toLowerCase();
-          if(ua.match(/MicroMessenger/i) == 'micromessenger'){
-              return true;
-          } else {
-              return false;
-          }
-      },
-  },
+    getAccessToken: async function() {
+      console.log($http, "this.$http");
+      let CODE = localStorage["webappCode"];
+      // let url = `https://api.weixin.qq.com/sns/oauth2/access_token?appid=${appID.appid}&secret=${appID.secret}&code=${CODE}&grant_type=authorization_code`
+      let url = `https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${appID.appid}&secret=${appID.secret}`;
+      let data = await $http.get(url, {});
+        if('access_token' in data){
+          console.log("this.$htt234234");
+          localStorage['access_token'] = data.access_token
+          this.getJsapiTicket
+        }
+      console.log(data);
+    },
+    getJsapiTicket:async function(){
+      let accessToken =localStorage['access_token']
+      let url = `https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=${accessToken}&type=jsapi` 
+      let data = await $http.get(url, {});
+     console.log(data,'getJsapiTicket');
+    }
+  }
 };
 </script>
 <style lang="scss" scoped>
@@ -105,7 +117,7 @@ export default {
   .content {
     // height: 1000px;
     overflow: auto;
-    top:4.875rem;
+    top: 4.875rem;
 
     .imgw {
       width: 3.125rem;
@@ -114,7 +126,7 @@ export default {
     .buttom-foot {
       border-bottom: 1px solid #dcdfe6;
     }
-    .imgGame{
+    .imgGame {
       width: 9.375rem;
       height: 9.375rem;
     }
@@ -122,7 +134,7 @@ export default {
   .footer {
     position: absolute;
     bottom: 1.25rem;
-    right: .625rem;
+    right: 0.625rem;
   }
 }
 </style>
