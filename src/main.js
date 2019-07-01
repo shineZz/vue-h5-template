@@ -2,7 +2,7 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-import { isweixin } from './unit';
+import { isweixin, urlParse } from './unit';
 import {
   Pagination,
   Dialog,
@@ -70,13 +70,16 @@ import {
   Loading,
   MessageBox,
   Message,
-  Notification
+  Notification, Image
 } from 'element-ui';
-import './registerServiceWorker'
+// import './registerServiceWorker'
 import './plugins/element.js'
 import './assets/styles/base.scss'
 import 'element-ui/lib/theme-chalk/index.css';
+import { appID } from "./unit";
 import { mapMutations } from 'vuex'
+import md5 from 'js-md5';
+
 Vue.config.productionTip = false
 var elUseList = [
   Pagination,
@@ -142,6 +145,7 @@ var elUseList = [
   Aside,
   Main,
   Footer,
+  Image
 ];
 elUseList.forEach((u) => {
   Vue.use(u);
@@ -154,39 +158,41 @@ Vue.prototype.$confirm = MessageBox.confirm;
 Vue.prototype.$prompt = MessageBox.prompt;
 Vue.prototype.$notify = Notification;
 Vue.prototype.$message = Message;
+Vue.prototype.$md5 = md5;
 
 router.beforeEach((to, from, next) => {
-  let url = encodeURIComponent(location.href)
-  let took = to.query.state||false
-  console.log(took, 'took0')
+  let url = location.href
+  // let url = encodeURIComponent(location.href.replace('#/', ''))
+  let query = urlParse(url) || {}
+  // if(!query){Message.error('该链接无效')}
+  let took = query.state || false
   let bool = isweixin()
+
   if (bool) {
+    for (let key in query) {
+      sessionStorage[key] = query[key]
+    }
+    // if ('sid' in query) { sessionStorage['sid'] = query.sid }
     if (!took) {
-      location.href = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx9f8d74816fc35815&redirect_uri=${url}&response_type=code&scope=snsapi_userinfo&state=true#wechat_redirect`
-    }else{
-      console.log(took, 'took122')
-      console.log(to, from,next, url,'urlurl')
-      let query =to.query
-      if ('code' in query){
+      location.href = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${
+        appID.appid
+        }&redirect_uri=${encodeURIComponent(url)}&response_type=code&scope=snsapi_userinfo&state=true#wechat_redirect`
+    } else {
+      if ('code' in query) {
         sessionStorage['webappCode'] = query.code
         next()
-      }else{
-        this.$message({
-          message: '请授权之后访问',
-          type: 'warning'
-        });
-        location.href = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx9f8d74816fc35815&redirect_uri=${url}&response_type=code&scope=snsapi_userinfo&state=true#wechat_redirect`
+      } else {
+        next()
       }
-      
-      
     }
   } else {
-    if (!took) {
-      next()
-      // location.href = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx9f8d74816fc35815&redirect_uri=${url}&response_type=code&scope=snsapi_base&state=false#wechat_redirect`
-    }
+    next()
+    // location.href = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${
+    //     appID.appid
+    //     }&redirect_uri=${encodeURIComponent(url)}&response_type=code&scope=snsapi_userinfo&state=false#wechat_redirect`
+
   }
-  
+
   /* must call `next` */
 
 

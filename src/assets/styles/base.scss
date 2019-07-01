@@ -151,7 +151,9 @@ div:focus {
 .fr {
   float: right;
 }
-
+.cp{
+  cursor: pointer;
+}
 .fl {
   float: left;
 }
@@ -413,4 +415,23 @@ pb5 {
 }
 .ly-flex-fw {
   flex-wrap: wrap;
+}
+@function vm($px) {
+  @return ($px / 640) * 100vw;
+}
+
+@media screen and (min-width: 1200px) {
+  
+}
+@media screen and(min-width: 960px) and (max-width: 1199px) {
+  
+}
+@media screen and(min-width: 768px) and (max-width: 959px) {
+ 
+}
+@media screen and(min-width: 480px) and (max-width: 767px) {
+  
+}
+@media screen and (max-width: 479px) {
+  
 }

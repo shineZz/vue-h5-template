@@ -2,8 +2,10 @@ import axios from 'axios'
 // import { Loading, Message } from 'element-ui'
 // 超时时间
 // 请求时的拦截
+// let baseURL = process.env.NODE_ENV === "production" ?'':''
 axios.interceptors.request.use(config => {
   // loading
+
   return config
 }, error => {
   return Promise.reject(error)
@@ -11,6 +13,7 @@ axios.interceptors.request.use(config => {
 
 // 响应时拦截
 axios.interceptors.response.use(response => {
+ 
   return response
 }, error => {
   return Promise.resolve(error.response)
@@ -47,14 +50,10 @@ function checkStatus (response) {
 }
   
  export default {
-
    post (url, data) {
 
     return axios({
       method:'post',
-      baseURL: host,
-      // baseURL:'http://10.201.235.51:9100/mom',
-      // baseURL:'http://10.201.224.27:9100',
       url: url,
       emulateJSON: true,
       data: data,
@@ -63,28 +62,23 @@ function checkStatus (response) {
         'X-Requested-With': 'XMLHttpRequest',
         'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
       }
-    }).then(
-      (response) => {
-        return checkStatus(response)
-      }
-    ).catch(()=>{
+    }).catch(()=>{
       console.log('catch error')
     })
   },
 
   get (url, params) {
+   
     return axios({
       method: 'get',
-      baseURL: '',
+      // baseURL,
       url,
       params, // get 请求时带的参数
       timeout: 10000,
       headers: {
         'X-Requested-With': 'XMLHttpRequest'
       }
-    }).then(
-      (response) => {
-        return checkStatus(response)
-      }
-    )
+    }).catch(()=>{
+      console.log('catch error')
+    })
   }}

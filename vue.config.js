@@ -7,13 +7,18 @@ module.exports = {
   // 默认情况下，Vue CLI假设您的应用程序将部署在域的根目录下。
   // https://www.my-app.com/。如果应用程序部署在子路径上，则需要使用此选项指定子路径。例如，如果您的应用程序部署在https://www.foobar.com/my-app/，集baseUrl到'/my-app/'.
 
-  publicPath: process.env.NODE_ENV === "production" ? "./" : "/",
+  publicPath: process.env.NODE_ENV === "production" ? "./" : "./",
 
   // outputDir: 在npm run build时 生成文件的目录 type:string, default:'dist'
-
+  indexPath:'index.html',
   // outputDir: 'dist',
 
   // pages:{ type:Object,Default:undfind } 
+  configureWebpack: config => {
+    if (process.env.NODE_ENV === 'production') {
+      config.optimization.minimizer[0].options.terserOptions.compress.drop_console = true
+    }
+  },
 /*
 构建多页面模式的应用程序.每个“页面”都应该有一个相应的JavaScript条目文件。该值应该是一
 个对象，其中键是条目的名称，而该值要么是指定其条目、模板和文件名的对象，要么是指定其条目
@@ -47,19 +52,33 @@ module.exports = {
 
   devServer: {
       port: 80, // 端口号
-      host: 'www.orangebaba.com',
+      host: 'wxmch.0551game.com',
+      // port: 8084, // 端口号
+      // host: 'localhost',
+      // port: 8889,
+      // host: '127.0.0.1',
       https: false, // https:{type:Boolean}
       open: true, //配置自动启动浏览器
       // proxy: 'http://localhost:4000' // 配置跨域处理,只有一个代理
       proxy: {
-          '/api': {
-              target: '<url>',
-              ws: true,
+          '/rapi': {
+              target: 'http://47.101.196.174:6001/api',
+              // ws: true,
               changeOrigin: true,
-            //   pathRewrite: {
-            //     '^/api/old-path': '/api/new-path', // rewrite path
-            //     '^/api/remove/path': '/path' // remove base path
-            //   },
+              pathRewrite: {
+                '^/rapi': ''//这里理解成用‘/api
+                // '^/api/old-path': '/api/new-path', // rewrite path
+                // '^/api/remove/path': '/path' // remove base path
+              },
+          },
+          '/api3':{
+            target:'http://35.241.100.145:5315/api',
+            changeOrigin:true,
+            pathRewrite: {
+              '^/api3': ''//这里理解成用‘/api
+              // '^/api/old-path': '/api/new-path', // rewrite path
+              // '^/api/remove/path': '/path' // remove base path
+            },
           },
           '/foo': {
               target: '<other_url>'
